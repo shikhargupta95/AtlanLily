@@ -1,0 +1,156 @@
+CREATE KEYSPACE IF NOT EXISTS data_monte_carlo_db_0001 WITH REPLICATION = {
+    'class': 'SimpleStrategy',
+    'replication_factor': 3
+};
+
+CREATE TYPE IF NOT EXISTS data_monte_carlo_db_0001.table_type (
+    table_id text,
+    mcon text,
+    is_key_asset text
+);
+
+CREATE TYPE IF NOT EXISTS data_monte_carlo_db_0001.warehouse_type (
+    id text,
+    uuid uuid,
+    name text,
+    connection_type text,
+    created_on timestamp
+);
+
+CREATE TABLE IF NOT EXISTS data_monte_carlo_db_0001.incident_data (
+    user_id text,
+    mc_dw_id text,
+
+    uuid text,
+    title text,
+
+    tables FROZEN<list<table_type>>,
+    created_time timestamp,
+    type text,
+    sub_types list<text>,
+    priority text,
+    project text,
+    dataset text,
+    status text,
+    timestamp timestamp,
+    warehouse_info warehouse_type,
+
+    PRIMARY KEY ((user_id, mc_dw_id))
+) WITH gc_grace_seconds = 10;
+
+
+CREATE TYPE IF NOT EXISTS data_monte_carlo_db_0001.comparison_type (
+    baseline_agg_function text,
+    baseline_interval_minutes bigint,
+    comparison_type text,
+    custom_metric blob,
+    data_collection_interval_minutes bigint,
+    fields list<text>,
+    full_table_ids list<text>,
+    is_freshness_from_metadata boolean,
+    is_threshold_relative boolean,
+    lower_threshold float,
+    max_buffer blob,
+    metric text,
+    min_buffer blob,
+    number_of_agg_periods bigint,
+    operator text,
+    rule_interval_minutes bigint,
+    source_metric text,
+    target_metric text,
+    threshold float,
+    threshold_lookback_datapoints bigint,
+    threshold_ref text,
+    threshold_sensitivity text,
+    upper_threshold float
+);
+
+
+CREATE TYPE IF NOT EXISTS data_monte_carlo_db_0001.data_source_type (
+    custom_sql text,
+    schema blob,
+    tables list<table_type>,
+    type text,
+    uuid uuid
+);
+
+
+CREATE TABLE IF NOT EXISTS data_monte_carlo_db_0001.monitor_data (
+    user_id text,
+    mc_dw_id text,
+    monitor_name text,
+
+    agg_time_interval text,
+    breach_rate text,
+    comparisons FROZEN<list<comparison_type>>,
+    conditional_snooze boolean,
+    connection_id text,
+    created_time timestamp,
+    creator text,
+    creator_id text,
+    custom_sql_rule_type text,
+    data_source datasource_type,
+    description text,
+    entities list<text>,
+    entity_mcons list<text>,
+    exceptions text,
+    has_custom_rule_name boolean,
+    high_segment_count boolean,
+    history_days bigint,
+    incident_count_history blob,
+    interval_minutes bigint,
+    is_auto_threshold_available boolean,
+    is_oobt_monitor boolean,
+    is_paused boolean,
+    is_snoozeable boolean,
+    is_snoozed boolean,
+    is_template_managed boolean,
+    is_transitioning_data_provider boolean,
+    labels list<text>,
+    last_update_time timestamp,
+    min_segment_size bigint,
+    monitor_configuration_status text,
+    monitor_fields list<text>,
+    monitor_run_status text,
+    monitor_status text,
+    monitor_time_axis_field_name text,
+    monitor_time_axis_field_type text,
+    monitor_training_status text,
+    monitor_type text,
+    namespace text,
+    next_execution_time timestamp,
+    notes text,
+    notification_settings blob,
+    notify_rule_run_failure bool,
+    ootb_monitor_type text,
+    prev_execution_time timestamp,
+    priority text,
+    resource_id text,
+    rule_variables text,
+    schedule_config blob,
+    schedule_type text,
+    segmented_expressions list<text>,
+    selected_metrics list<text>,
+    select_expressions blob,
+    seven_days_incident_count bigint,
+    slack_snooze_user text,
+    snooze_until_time timestamp,
+    table_count bigint,
+    table_count_is_ingested bigint,
+    table_count_is_monitored bigint,
+    table_count_is_muted bigint,
+    table_count_is_not_ingested bigint,
+    table_count_is_not_monitored bigint,
+    table_count_is_not_muted bigint,
+    thirty_days_incident_count bigint,
+    updater text,
+    updater_id text,
+    use_partition_clause boolean,
+    uuid uuid,
+    version text,
+    weekly_incident_count_change_rate float,
+    where_condition text,
+
+    PRIMARY KEY ((user_id, mc_dw_id, monitor_name))
+) WITH gc_grace_seconds = 10;
+

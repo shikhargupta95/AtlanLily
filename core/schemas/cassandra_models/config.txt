@@ -1,0 +1,49 @@
+CREATE KEYSPACE IF NOT EXISTS config_db_0001 WITH REPLICATION = {
+    'class': 'SimpleStrategy',
+    'replication_factor': 3
+};
+
+CREATE TABLE IF NOT EXISTS config_db_0001.connector_user_config (
+    user_id text,
+    connector_id text,
+
+    connector_type text,
+    auth_conf blob,
+    service_conf blob,
+    schedule_conf blob,
+    lupdt timestamp,
+    PRIMARY KEY ((connector_id, user_id), timestamp)
+) WITH CLUSTERING ORDER BY (timestamp DESC) AND gc_grace_seconds = 10;
+
+
+CREATE TABLE IF NOT EXISTS config_db_0001.cassandra_source_config (
+    source_id text,
+
+    keyspace text,
+    table_name text,
+    partition_keys list<text>,
+    clustering_keys list<text>,
+    version_keys list<text>,
+    lupdt timestamp,
+
+    PRIMARY KEY (source_id)
+) WITH gc_grace_seconds = 10;
+
+CREATE TABLE IF NOT EXISTS config_db_0001.document_processing_user_config (
+    user_id text,
+    connector_id text,
+
+    transformations blob,
+    derivations blob,
+    validations blob,
+    annotations blob,
+    lupdt timestamp,
+    PRIMARY KEY ((user_id, connector_id), timestamp)
+) WITH CLUSTERING ORDER BY (timestamp DESC) AND gc_grace_seconds = 10;
+
+
+CREATE TABLE IF NOT EXISTS config_db_0001.alerts_user_config (
+    user_id text,
+    connector_id text,
+
+    alerts blob,
