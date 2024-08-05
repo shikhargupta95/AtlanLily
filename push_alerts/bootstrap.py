@@ -11,7 +11,7 @@ from notification_service import AlertsService
 '''
 CLI Params:
 --user_id 
---connector_id4
+--connector_id
 --topic
 --mode
 --group_id
@@ -51,8 +51,8 @@ def bootstrap(user_id, connector_id, topic, mode, group_id, retry_topic=None):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        prog='MonteCarloConnector',
-        description='Crawl Incident Data from Monte Carlo',
+        prog='Notification Service',
+        description='Push Alerts to webhooks',
     )
     parser.add_argument('--user_id', help="The user_id that triggered the connector", required=True)
     parser.add_argument('--connector_id', help="The unique identifier for the service", required=True)
