@@ -1,12 +1,11 @@
 import os
-import json
 import argparse
 
 from core.connection_wrappers.cassandra_wrapper import CassandraContext
 from core.connection_wrappers.kafka_wrapper import KafkaProducerContext
 
 from plugins.fetch_from_monte_carlo import MonteCarloConnector
-from constants import CASSANDRA_SEEDS, KAFKA_SEEDS, CONFIG_TABLE, AUTH_VARIBLES
+from core.utils.constants import CASSANDRA_SEEDS, KAFKA_SEEDS, CONNECTOR_CONFIG_TABLE, AUTH_VARIABLES
 
 
 '''
@@ -18,15 +17,15 @@ CLI Params:
 '''
 
 def bootstrap(user_id, connector_id, topic):
-    cassandra_auth = {"username": os.environ.get(AUTH_VARIBLES["username"]),
-                      "password": os.environ.get(AUTH_VARIBLES["password"])}
+    cassandra_auth = {"username": os.environ.get(AUTH_VARIABLES["username"]),
+                      "password": os.environ.get(AUTH_VARIABLES["password"])}
     cassandra_ctx = CassandraContext(CASSANDRA_SEEDS, **{"auth": cassandra_auth})
     producer_ctx = KafkaProducerContext(KAFKA_SEEDS)
     plugin_obj = MonteCarloConnector(user_id=user_id,
                                      connector_id=connector_id,
                                      cassandra_ctx=cassandra_ctx,
                                      producer_ctx=producer_ctx,
-                                     config_table=CONFIG_TABLE,
+                                     config_table=CONNECTOR_CONFIG_TABLE,
                                      topic=topic)
     plugin_obj.execute()
     producer_ctx.close()

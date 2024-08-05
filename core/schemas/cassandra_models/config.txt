@@ -44,6 +44,9 @@ CREATE TABLE IF NOT EXISTS config_db_0001.document_processing_user_config (
 
 CREATE TABLE IF NOT EXISTS config_db_0001.alerts_user_config (
     user_id text,
-    connector_id text,
+    process_id text,
+    doc_type text,
 
     alerts blob,
+    PRIMARY KEY ((user_id, connector_id, doc_type))
+) WITH gc_grace_seconds = 10;
