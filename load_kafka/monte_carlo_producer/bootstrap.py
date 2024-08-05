@@ -1,5 +1,7 @@
 import os
+import logging
 import argparse
+import traceback
 
 from core.connection_wrappers.cassandra_wrapper import CassandraContext
 from core.connection_wrappers.kafka_wrapper import KafkaProducerContext
@@ -21,15 +23,21 @@ def bootstrap(user_id, connector_id, topic):
                       "password": os.environ.get(AUTH_VARIABLES["password"])}
     cassandra_ctx = CassandraContext(CASSANDRA_SEEDS, **{"auth": cassandra_auth})
     producer_ctx = KafkaProducerContext(KAFKA_SEEDS)
-    plugin_obj = MonteCarloConnector(user_id=user_id,
-                                     connector_id=connector_id,
-                                     cassandra_ctx=cassandra_ctx,
-                                     producer_ctx=producer_ctx,
-                                     config_table=CONNECTOR_CONFIG_TABLE,
-                                     topic=topic)
-    plugin_obj.execute()
-    producer_ctx.close()
-    cassandra_ctx.close()
+    try:
+        plugin_obj = MonteCarloConnector(user_id=user_id,
+                                         connector_id=connector_id,
+                                         cassandra_ctx=cassandra_ctx,
+                                         producer_ctx=producer_ctx,
+                                         config_table=CONNECTOR_CONFIG_TABLE,
+                                         topic=topic)
+        plugin_obj.execute()
+    except Exception as e:
+        logging.error(e)
+        logging.error(traceback.format_exc())
+    finally:
+        producer_ctx.flush()
+        producer_ctx.close()
+        cassandra_ctx.close()
 
 
 if __name__ == "__main__":
