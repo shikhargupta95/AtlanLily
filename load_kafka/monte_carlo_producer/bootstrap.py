@@ -13,7 +13,7 @@ from core.utils.constants import CASSANDRA_SEEDS, KAFKA_SEEDS, CONNECTOR_CONFIG_
 '''
 CLI Params:
 --user_id 
---connector_id4
+--connector_id
 --topic
 
 '''
